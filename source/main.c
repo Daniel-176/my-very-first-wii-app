@@ -10,8 +10,7 @@
 #include <wiiuse/wpad.h>
 #include <ogc/tpl.h>
 
-#include "textures_tpl.h"
-#include "textures.h"
+#include "helo_tpl.h"
  
 int main(int argc, char **argv) {
     // Initialise the Graphics & Video subsystem
@@ -24,7 +23,7 @@ int main(int argc, char **argv) {
     //Texture
     GRRLIB_texImg *myTplTexture;
     // Arguments: (raw_tpl_array_pointer, texture_id_inside_tpl)
-    myTplTexture = GRRLIB_LoadTextureTPL(textures_tpl, 0);
+    myTplTexture = GRRLIB_LoadTextureTPL(helo_tpl, 0);
 
     // Loop forever
     while(SYS_MainLoop()) {
@@ -49,8 +48,8 @@ int main(int argc, char **argv) {
         }
         else
         {
-            GRRLIB_Line(0, 0, 640, 480, 0xFFFFFFFF, true);
-            GRRLIB_Line(640, 0, 0, 480, 0xFFFFFFFF, true);
+            GRRLIB_Line(0, 0, 640, 480, 0xFFFFFFFF);
+            GRRLIB_Line(640, 0, 0, 480, 0xFFFFFFFF);
         }
 
         GRRLIB_Render();  // Render the frame buffer to the TV
