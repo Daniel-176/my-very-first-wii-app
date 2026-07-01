@@ -67,6 +67,7 @@ int main(int argc, char **argv) {
         }
 
 
+
         // If [HOME] was pressed on the first Wiimote, break out of the loop
         if (WPAD_ButtonsDown(0) & WPAD_BUTTON_HOME)  break;
  
@@ -78,6 +79,15 @@ int main(int argc, char **argv) {
         
         int cursorX = (ir.x / 1024.0f) * 640;
         int cursorY = (ir.y / 768.0f) * 480;
+
+        void DrawIR() {
+            int cursorX = (ir.x / 1024.0f) * 640;
+            int cursorY = (ir.y / 768.0f) * 480;
+            if(ir.valid) {
+                GRRLIB_DrawImg(cursorX, cursorY, myTplTexture, 0, 0.5, 0.5, 0xFFFFFFFF);
+                hasusedirbefore = true;
+            }
+        }
 
         /// omgg button
 
@@ -100,9 +110,7 @@ int main(int argc, char **argv) {
         // Place your drawing code here
         // ---------------------------------------------------------------------
         if(ir.valid) {
-            // Draw a basic crosshair if a valid IR signal is detected
-            GRRLIB_DrawImg(cursorX, cursorY, myTplTexture, 0, 0.5, 0.5, 0xFFFFFFFF);
-            hasusedirbefore = true;
+            
         }
         else
         {
@@ -118,6 +126,7 @@ int main(int argc, char **argv) {
         }
 
         DrawModal();
+        DrawIR();
         GRRLIB_Render();  // Render the frame buffer to the TV
     }
  
