@@ -11,10 +11,16 @@
 #include <ogc/tpl.h>
 
 #include "helo_tpl.h"
+#include "lol_tpl.h"
+#include "cattie_tpl.h"
  
+//Comic Sans
+#include "comicsans.h"
+
 int main(int argc, char **argv) {
     // Initialise the Graphics & Video subsystem
     GRRLIB_Init();
+    GRRLIB_ttfFont *comicsans = GRRLIB_LoadTTF(Comic_Sans_MS_ttf, Comic_Sans_MS_ttf_len);
  
     // Initialise the Wiimotes
     WPAD_Init();
@@ -22,8 +28,18 @@ int main(int argc, char **argv) {
     
     //Texture
     GRRLIB_texImg *myTplTexture;
-    // Arguments: (raw_tpl_array_pointer, texture_id_inside_tpl)
     myTplTexture = GRRLIB_LoadTextureTPL(helo_tpl, 0);
+    GRRLIB_SetMidHandle(myTplTexture, 1);
+
+    GRRLIB_texImg *lol;
+    lol = GRRLIB_LoadTextureTPL(lol_tpl, 0);
+    GRRLIB_SetMidHandle(lol, 1);
+
+    GRRLIB_texImg *cattie;
+    cattie = GRRLIB_LoadTextureTPL(cattie_tpl, 0);
+    GRRLIB_SetMidHandle(cattie, 1);
+
+    bool hasusedirbefore = false;
 
     // Loop forever
     while(SYS_MainLoop()) {
@@ -40,16 +56,25 @@ int main(int argc, char **argv) {
         // ---------------------------------------------------------------------
         // Place your drawing code here
         // ---------------------------------------------------------------------
-        GRRLIB_FillScreen(0x000000FF);
+        GRRLIB_FillScreen(0xFFFFFFFF);
         if(ir.valid) {
+            int cursorX = (ir.x / 1024.0f) * 640;
+            int cursorY = (ir.y / 768.0f) * 480;
             // Draw a basic crosshair if a valid IR signal is detected
-            GRRLIB_DrawImg(ir.sx, ir.sy, myTplTexture, 0, 1, 1, 0xFFFFFFFF);
-            
+            GRRLIB_DrawImg(cursorX, cursorY, myTplTexture, 0, 0.5, 0.5, 0xFFFFFFFF);
+            hasusedirbefore = true;
         }
         else
         {
-            GRRLIB_Line(0, 0, 640, 480, 0xFFFFFFFF);
-            GRRLIB_Line(640, 0, 0, 480, 0xFFFFFFFF);
+            if(hasusedirbefore) {
+                GRRLIB_FillScreen(0xFFFFFFFF);
+                GRRLIB_DrawImg(320, 240, lol, 0, 1, 1, 0xFFFFFFFF);
+                GRRLIB_PrintfTTFW(160, 240, comicsans, L"HAHH NO IR DETECTED", 16, 0xFF0000FF);
+            } else {
+                GRRLIB_FillScreen(0xFFFFFFFF);
+                GRRLIB_DrawImg(320, 240, cattie, 0, 1, 1, 0xFFFFFFFF);
+                GRRLIB_PrintfTTFW(160, 240, comicsans, L"pls sir get your wiimote on screen", 16, 0x0000FFFF);
+            }
         }
 
         GRRLIB_Render();  // Render the frame buffer to the TV
