@@ -18,6 +18,13 @@
 #include "comicsans.h"
 
 int main(int argc, char **argv) {
+    typedef struct {
+        bool isOpened;
+        char title[64];
+        char message[128];
+    } Modal;
+
+    Modal testy = {false, "Test", "coding with loop is pain"};
     // Initialise the Graphics & Video subsystem
     GRRLIB_Init();
     GRRLIB_ttfFont *comicsans = GRRLIB_LoadTTF(Comic_Sans_MS_ttf, Comic_Sans_MS_ttf_len);
@@ -45,6 +52,21 @@ int main(int argc, char **argv) {
     while(SYS_MainLoop()) {
         WPAD_ScanPads();  // Scan the Wiimotes
  
+
+        //got these from web
+        void DrawModal() {
+            if (!testy.isOpened) return;
+
+            GRRLIB_Rectangle(0, 0, 640, 480, 0x000000C8, 1);
+
+            GRRLIB_Rectangle(120, 140, 400, 200, 0xFFFFFFFF, 1);
+            GRRLIB_Rectangle(118, 138, 404, 204, 0x000000FF, 0);
+
+            GRRLIB_PrintfTTF(140, 160, comicsans, testy.title, 20, 0x000000FF);
+            GRRLIB_PrintfTTF(140, 200, comicsans, testy.message, 16, 0x000000FF);
+        }
+
+
         // If [HOME] was pressed on the first Wiimote, break out of the loop
         if (WPAD_ButtonsDown(0) & WPAD_BUTTON_HOME)  break;
  
@@ -52,14 +74,32 @@ int main(int argc, char **argv) {
         // Get the IR (infrared) state for the first Wiimote
         ir_t ir;
         WPAD_IR(0, &ir);
+        GRRLIB_FillScreen(0xFFFFFFFF);
+        
+        int cursorX = (ir.x / 1024.0f) * 640;
+        int cursorY = (ir.y / 768.0f) * 480;
+
+        /// omgg button
+
+        bool mabuttonishover = ((cursorX < 100 && cursorX > 4) && (cursorY > 4 && cursorY < 100));
+
+        GRRLIB_Rectangle(4, 4, 101, 21, 0x000000FF, 0);
+        if(mabuttonishover) {
+            if (WPAD_ButtonsDown(0) & WPAD_BUTTON_A) {
+                GRRLIB_Rectangle(5, 5, 100, 20, 0x222222FF, 1);
+                testy.isOpened = true;
+            } else {
+                GRRLIB_Rectangle(5, 5, 100, 20, 0xAAAAAAFF, 1);
+            }
+        } else {
+            GRRLIB_Rectangle(5, 5, 100, 20, 0xFFFFFFFF, 1);
+        }
+        GRRLIB_PrintfTTFW(4, 4, comicsans, L"wats ts", 16, 0x0000FFFF);
 
         // ---------------------------------------------------------------------
         // Place your drawing code here
         // ---------------------------------------------------------------------
-        GRRLIB_FillScreen(0xFFFFFFFF);
         if(ir.valid) {
-            int cursorX = (ir.x / 1024.0f) * 640;
-            int cursorY = (ir.y / 768.0f) * 480;
             // Draw a basic crosshair if a valid IR signal is detected
             GRRLIB_DrawImg(cursorX, cursorY, myTplTexture, 0, 0.5, 0.5, 0xFFFFFFFF);
             hasusedirbefore = true;
@@ -77,6 +117,7 @@ int main(int argc, char **argv) {
             }
         }
 
+        DrawModal();
         GRRLIB_Render();  // Render the frame buffer to the TV
     }
  
